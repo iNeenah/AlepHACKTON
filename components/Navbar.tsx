@@ -10,40 +10,45 @@ export function Navbar() {
   }
 
   return (
-    <nav className="bg-white shadow-lg border-b-2 border-green-100">
-      <div className="container mx-auto px-4">
+    <nav className="bg-card border-b border-neutral-200 sticky top-0 z-50 backdrop-blur-lg bg-white/90">
+      <div className="container-modern">
         <div className="flex justify-between items-center h-16">
-          {/* Logo */}
-          <div className="flex items-center space-x-2">
+          {/* 🏢 Logo profesional */}
+          <div className="flex items-center space-x-3">
             <div className="text-2xl">🌱</div>
-            <span className="text-xl font-bold text-gray-900">
-              Carbon Credit Marketplace
-            </span>
+            <div>
+              <span className="text-xl font-bold text-gradient">
+                Carbon Credit
+              </span>
+              <div className="text-sm text-neutral-500 -mt-1">Marketplace</div>
+            </div>
           </div>
 
-          {/* Navigation Links */}
-          <div className="hidden md:flex items-center space-x-6">
-            <a href="#" className="text-gray-600 hover:text-green-600 font-medium">
+          {/* 📋 Navigation Links */}
+          <div className="hidden md:flex items-center space-x-8">
+            <a href="#" className="nav-link">
               Marketplace
             </a>
-            <a href="#" className="text-gray-600 hover:text-green-600 font-medium">
+            <a href="#" className="nav-link">
               About
             </a>
-            <a href="#" className="text-gray-600 hover:text-green-600 font-medium">
+            <a href="#" className="nav-link">
               How it Works
             </a>
           </div>
 
-          {/* Wallet Connection */}
+          {/* 💳 Wallet Connection */}
           <div className="flex items-center space-x-4">
             {account ? (
               <div className="flex items-center space-x-3">
-                <div className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">
-                  {formatAddress(account)}
+                {/* 💵 Account badge */}
+                <div className="bg-neutral-100 text-neutral-700 px-4 py-2 rounded-lg font-medium text-sm">
+                  🔗 {formatAddress(account)}
                 </div>
+                
                 <button
                   onClick={disconnect}
-                  className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+                  className="btn-secondary text-sm"
                 >
                   Disconnect
                 </button>

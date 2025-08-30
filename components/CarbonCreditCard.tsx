@@ -52,80 +52,90 @@ export function CarbonCreditCard({
   }
 
   return (
-    <div className="bg-white rounded-lg shadow-lg overflow-hidden card-shadow hover:shadow-xl transition-shadow">
+    <div className="card-modern group">
       {/* Header */}
-      <div className="gradient-green text-white p-4">
+      <div className="bg-gradient-primary text-white p-6 rounded-t-xl">
         <div className="flex justify-between items-start">
-          <div>
-            <h3 className="font-bold text-lg">{credit.projectName}</h3>
-            <p className="text-green-100">📍 {credit.location}</p>
+          <div className="flex-1">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="text-2xl">🌱</div>
+              <h3 className="font-bold text-lg">{credit.projectName}</h3>
+            </div>
+            <p className="text-blue-100 flex items-center gap-2">
+              <span>📍</span>
+              {credit.location}
+            </p>
           </div>
           <div className="text-right">
             <div className="text-2xl font-bold">{credit.carbonAmount.toString()}t</div>
-            <div className="text-green-100 text-sm">CO₂</div>
+            <div className="text-blue-100 text-sm">CO₂ Offset</div>
           </div>
         </div>
       </div>
 
       {/* Content */}
-      <div className="p-4 space-y-3">
+      <div className="p-6 space-y-4">
         {/* Status */}
         <div className="flex items-center justify-between">
-          <span className="text-sm text-gray-600">Status:</span>
-          <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+          <span className="text-small font-medium">Status:</span>
+          <span className={`px-3 py-1 rounded-full text-xs font-medium ${
             credit.isRetired 
-              ? 'bg-gray-100 text-gray-800' 
+              ? 'bg-neutral-200 text-neutral-700' 
               : credit.isForSale 
-                ? 'bg-blue-100 text-blue-800'
-                : 'bg-green-100 text-green-800'
+                ? 'bg-blue-100 text-blue-700'
+                : 'bg-emerald-100 text-emerald-700'
           }`}>
-            {credit.isRetired ? '♻️ Retired' : credit.isForSale ? '🛒 For Sale' : '💎 Owned'}
+            {credit.isRetired ? '♻️ Retired' : credit.isForSale ? '🛒 For Sale' : '💎 Available'}
           </span>
         </div>
 
         {/* Dates */}
-        <div className="text-sm space-y-1">
-          <div className="flex justify-between">
-            <span className="text-gray-600">Issued:</span>
-            <span>{formatDate(credit.issuanceDate)}</span>
+        <div className="space-y-2">
+          <div className="flex justify-between items-center text-sm">
+            <span className="text-neutral-500">📅 Issued:</span>
+            <span className="font-medium">{formatDate(credit.issuanceDate)}</span>
           </div>
-          <div className="flex justify-between">
-            <span className="text-gray-600">Expires:</span>
-            <span>{formatDate(credit.expiryDate)}</span>
+          <div className="flex justify-between items-center text-sm">
+            <span className="text-neutral-500">⏰ Expires:</span>
+            <span className="font-medium">{formatDate(credit.expiryDate)}</span>
           </div>
         </div>
 
         {/* Price */}
         {credit.isForSale && (
-          <div className="bg-blue-50 p-3 rounded-lg">
+          <div className="bg-neutral-50 p-4 rounded-lg border">
             <div className="flex justify-between items-center">
-              <span className="font-medium text-blue-900">Price:</span>
-              <span className="text-xl font-bold text-blue-600">
-                {formatPrice(credit.price)} ETH
-              </span>
+              <span className="font-medium text-neutral-700">💰 Price:</span>
+              <div className="text-right">
+                <span className="text-2xl font-bold text-primary">
+                  {formatPrice(credit.price)}
+                </span>
+                <span className="text-primary text-sm font-medium ml-1">ETH</span>
+              </div>
             </div>
           </div>
         )}
 
         {/* Token ID */}
-        <div className="text-xs text-gray-500">
-          Token ID: #{credit.tokenId.toString()}
+        <div className="flex items-center justify-between p-3 bg-neutral-50 rounded-lg text-sm">
+          <span className="text-neutral-500">🏷️ Token ID:</span>
+          <span className="font-mono font-medium">#{credit.tokenId.toString()}</span>
         </div>
       </div>
 
       {/* Actions */}
-      <div className="p-4 bg-gray-50 border-t">
+      <div className="p-6 bg-neutral-50 border-t rounded-b-xl">
         {!isOwner && credit.isForSale && onPurchase && (
           <button
             onClick={() => onPurchase(credit.tokenId.toString(), credit.price.toString())}
             className="w-full btn-primary"
           >
-            🛒 Buy Credit
+            🛒 Purchase Credit
           </button>
         )}
 
         {isOwner && !credit.isRetired && (
-          <div className="space-y-2">
+          <div className="space-y-3">
             {!credit.isForSale && onListForSale && (
               <button
                 onClick={() => setShowListModal(true)}
@@ -138,7 +148,7 @@ export function CarbonCreditCard({
             {onRetire && (
               <button
                 onClick={() => onRetire(credit.tokenId.toString())}
-                className="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-lg transition-colors"
+                className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2 px-4 rounded-lg transition-colors"
               >
                 ♻️ Retire Credit
               </button>
@@ -147,21 +157,28 @@ export function CarbonCreditCard({
         )}
 
         {credit.isRetired && (
-          <div className="text-center text-gray-500 py-2">
-            ✅ This credit has been retired
+          <div className="text-center py-4">
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-100 text-emerald-700 rounded-lg">
+              <span>✅</span>
+              <span className="font-medium">This credit has been retired</span>
+            </div>
           </div>
         )}
       </div>
 
-      {/* List for Sale Modal */}
+      {/* Modal */}
       {showListModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
-            <h3 className="text-lg font-bold mb-4">List Carbon Credit for Sale</h3>
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="card-modern max-w-md w-full mx-4 p-6">
+            <div className="text-center mb-6">
+              <div className="text-3xl mb-2">💰</div>
+              <h3 className="text-heading-3">List for Sale</h3>
+              <p className="text-body">Set a price for your carbon credit</p>
+            </div>
             
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="form-label">
                   Price (ETH)
                 </label>
                 <input
@@ -169,7 +186,7 @@ export function CarbonCreditCard({
                   step="0.001"
                   value={listPrice}
                   onChange={(e) => setListPrice(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                  className="form-input"
                   placeholder="0.1"
                 />
               </div>
@@ -186,7 +203,7 @@ export function CarbonCreditCard({
                   className="flex-1 btn-primary"
                   disabled={!listPrice}
                 >
-                  List for Sale
+                  Confirm
                 </button>
               </div>
             </div>

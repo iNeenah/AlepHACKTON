@@ -28,6 +28,7 @@ const CONTRACT_ABI = [
   "function getTokensByOwner(address owner) external view returns (uint256[] memory)",
   "function getTokensForSale() external view returns (uint256[] memory)",
   "function getCarbonCredit(uint256 tokenId) external view returns (tuple(uint256 tokenId, uint256 carbonAmount, string projectName, string location, uint256 issuanceDate, uint256 expiryDate, address verifier, bool isRetired, uint256 price, bool isForSale))",
+  "function removeFromSale(uint256 tokenId) external",
   "function tokenURI(uint256 tokenId) external view returns (string memory)",
   "function ownerOf(uint256 tokenId) external view returns (address)",
   "function addVerifier(address verifier) external",

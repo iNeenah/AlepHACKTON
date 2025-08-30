@@ -17,11 +17,14 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <head>
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+      </head>
+      <body className={`${inter.className} bg-surface`}>
         <Web3Provider>
-          <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50">
+          <div className="min-h-screen bg-surface">
             <Navbar />
-            <main className="container mx-auto px-4 py-8">
+            <main className="container-modern">
               {children}
             </main>
           </div>

@@ -58,8 +58,10 @@ export function MintCarbonCredit({ contract, onMinted }: MintCarbonCreditProps) 
       const tokenURI = "data:application/json;base64," + btoa(JSON.stringify(metadata))
       
       // Mint the token
+      const provider = contract.runner as ethers.JsonRpcSigner;
+      const signerAddress = await provider.getAddress();
       const tx = await contract.mintCarbonCredit(
-        formData.recipient || await contract.runner.getAddress(),
+        formData.recipient || signerAddress,
         formData.carbonAmount,
         formData.projectName,
         formData.location,
@@ -91,17 +93,19 @@ export function MintCarbonCredit({ contract, onMinted }: MintCarbonCreditProps) 
 
   return (
     <div className="max-w-2xl mx-auto">
-      <div className="bg-white rounded-lg shadow-lg p-6 card-shadow">
-        <div className="text-center mb-6">
-          <div className="text-4xl mb-2">⚡</div>
-          <h3 className="text-xl font-bold text-gray-900">Mint New Carbon Credit</h3>
-          <p className="text-gray-600">Create a new verified carbon credit NFT</p>
+      <div className="card-premium p-8">
+        <div className="text-center mb-8">
+          <div className="text-4xl mb-4 float">🌱</div>
+          <h3 className="text-heading-3 mb-2">
+            Create New Carbon Credit
+          </h3>
+          <p className="text-body">Tokenize your environmental impact on blockchain</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Recipient Address */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="form-label">
               Recipient Address (optional)
             </label>
             <input
@@ -109,17 +113,17 @@ export function MintCarbonCredit({ contract, onMinted }: MintCarbonCreditProps) 
               name="recipient"
               value={formData.recipient}
               onChange={handleInputChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+              className="form-input"
               placeholder="0x... (leave empty to mint to yourself)"
             />
-            <p className="text-xs text-gray-500 mt-1">
-              Leave empty to mint to your own wallet
+            <p className="text-small mt-2">
+              💡 Leave empty to mint to your own wallet
             </p>
           </div>
 
           {/* Carbon Amount */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="form-label">
               Carbon Amount (tonnes CO₂) *
             </label>
             <input
@@ -130,14 +134,14 @@ export function MintCarbonCredit({ contract, onMinted }: MintCarbonCreditProps) 
               required
               min="0.1"
               step="0.1"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+              className="form-input"
               placeholder="10.5"
             />
           </div>
 
           {/* Project Name */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="form-label">
               Project Name *
             </label>
             <input
@@ -146,14 +150,14 @@ export function MintCarbonCredit({ contract, onMinted }: MintCarbonCreditProps) 
               value={formData.projectName}
               onChange={handleInputChange}
               required
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+              className="form-input"
               placeholder="Amazon Rainforest Preservation"
             />
           </div>
 
           {/* Location */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="form-label">
               Location *
             </label>
             <input
@@ -162,14 +166,14 @@ export function MintCarbonCredit({ contract, onMinted }: MintCarbonCreditProps) 
               value={formData.location}
               onChange={handleInputChange}
               required
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+              className="form-input"
               placeholder="Brazil, South America"
             />
           </div>
 
           {/* Expiry Date */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="form-label">
               Expiry Date *
             </label>
             <input
@@ -179,13 +183,13 @@ export function MintCarbonCredit({ contract, onMinted }: MintCarbonCreditProps) 
               onChange={handleInputChange}
               required
               min={new Date().toISOString().split('T')[0]}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+              className="form-input"
             />
           </div>
 
           {/* Description */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="form-label">
               Description
             </label>
             <textarea
@@ -193,7 +197,7 @@ export function MintCarbonCredit({ contract, onMinted }: MintCarbonCreditProps) 
               value={formData.description}
               onChange={handleInputChange}
               rows={3}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+              className="form-input resize-none"
               placeholder="Describe the carbon offset project..."
             />
           </div>
@@ -202,25 +206,41 @@ export function MintCarbonCredit({ contract, onMinted }: MintCarbonCreditProps) 
           <button
             type="submit"
             disabled={isLoading}
-            className={`w-full py-3 px-4 rounded-lg font-bold text-white transition-colors ${
-              isLoading
-                ? 'bg-gray-400 cursor-not-allowed'
-                : 'bg-green-600 hover:bg-green-700'
-            }`}
+            className="w-full btn-primary py-3 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {isLoading ? '⏳ Minting...' : '⚡ Mint Carbon Credit'}
+            {isLoading ? (
+              <div className="flex items-center justify-center gap-2">
+                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                Creating...
+              </div>
+            ) : (
+              <div className="flex items-center justify-center gap-2">
+                <span>🚀</span> 
+                Create Carbon Credit
+              </div>
+            )}
           </button>
         </form>
 
         {/* Info Box */}
-        <div className="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
-          <div className="flex items-start">
-            <div className="text-blue-500 text-xl mr-3">ℹ️</div>
-            <div className="text-sm text-blue-700">
-              <p className="font-medium mb-1">Note:</p>
-              <p>Only authorized verifiers can mint carbon credits. Make sure you have the proper permissions before attempting to mint.</p>
-            </div>
-          </div>
+        <div className="mt-8 p-6 bg-blue-50 rounded-xl border border-blue-200">
+          <h4 className="font-semibold text-neutral-800 mb-3 flex items-center gap-2">
+            <span>ℹ️</span> Important Information
+          </h4>
+          <ul className="space-y-2 text-sm text-neutral-600">
+            <li className="flex items-start gap-2">
+              <span className="text-blue-500">•</span>
+              Only authorized verifiers can create carbon credits
+            </li>
+            <li className="flex items-start gap-2">
+              <span className="text-blue-500">•</span>
+              Make sure you have proper permissions before creating
+            </li>
+            <li className="flex items-start gap-2">
+              <span className="text-blue-500">•</span>
+              Credits are automatically verified by the contract
+            </li>
+          </ul>
         </div>
       </div>
     </div>
