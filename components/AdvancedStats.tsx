@@ -9,7 +9,7 @@ interface StatsProps {
   contract: ethers.Contract | null
 }
 
-export function AdvancedStats({ forSaleCredits, userCredits, contract }: StatsProps) {
+export function AdvancedStats({ forSaleCredits, userCredits }: StatsProps) {
   const [totalVolume, setTotalVolume] = useState(0)
   const [avgPrice, setAvgPrice] = useState(0)
   const [totalCO2Offset, setTotalCO2Offset] = useState(0)

@@ -1,13 +1,26 @@
-import './globals.css'
+import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
-import { Web3Provider } from '@/components/Web3Provider'
-import { Navbar } from '@/components/Navbar'
+import "./globals.css"
 
 const inter = Inter({ subsets: ['latin'] })
 
-export const metadata = {
-  title: 'Carbon Credit Marketplace',
-  description: 'Decentralized marketplace for carbon credits on blockchain',
+export const metadata: Metadata = {
+  title: 'Carbon Credit Marketplace - Powered by Symbiotic',
+  description: 'A revolutionary decentralized marketplace for verified carbon credits powered by Symbiotic Protocol\'s tranche-based vaults',
+  keywords: 'carbon credits, blockchain, symbiotic, defi, environmental, sustainability',
+  authors: [{ name: 'Carbon Credit Marketplace Team' }],
+  openGraph: {
+    title: 'Carbon Credit Marketplace',
+    description: 'Trade verified carbon credits on blockchain with Symbiotic security',
+    type: 'website',
+    images: ['/og-image.png'],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Carbon Credit Marketplace',
+    description: 'Trade verified carbon credits on blockchain with Symbiotic security',
+    images: ['/og-image.png'],
+  },
 }
 
 export default function RootLayout({
@@ -16,19 +29,16 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
+    <html lang="en" className="dark">
       <head>
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+        <link rel="icon" href="/favicon.ico" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="theme-color" content="#059669" />
       </head>
-      <body className={`${inter.className} bg-surface`}>
-        <Web3Provider>
-          <div className="min-h-screen bg-surface">
-            <Navbar />
-            <main className="container-modern">
-              {children}
-            </main>
-          </div>
-        </Web3Provider>
+      <body className={`${inter.className} antialiased`}>
+        <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+          {children}
+        </div>
       </body>
     </html>
   )

@@ -92,155 +92,172 @@ export function MintCarbonCredit({ contract, onMinted }: MintCarbonCreditProps) 
   }
 
   return (
-    <div className="max-w-2xl mx-auto">
-      <div className="card-premium p-8">
-        <div className="text-center mb-8">
-          <div className="text-4xl mb-4 float">🌱</div>
-          <h3 className="text-heading-3 mb-2">
-            Create New Carbon Credit
+    <div className="max-w-4xl mx-auto">
+      <div className="bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-xl border border-white/10 rounded-3xl p-8 shadow-2xl">
+        <div className="text-center mb-10">
+          <div className="w-20 h-20 bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-3xl flex items-center justify-center text-3xl mx-auto mb-6 float">
+            🌱
+          </div>
+          <h3 className="text-3xl font-bold text-white mb-3">
+            Create Carbon Credit NFT
           </h3>
-          <p className="text-body">Tokenize your environmental impact on blockchain</p>
+          <p className="text-white/60 text-lg">Tokenize your environmental impact and contribute to a sustainable future</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Recipient Address */}
-          <div>
-            <label className="form-label">
-              Recipient Address (optional)
-            </label>
-            <input
-              type="text"
-              name="recipient"
-              value={formData.recipient}
-              onChange={handleInputChange}
-              className="form-input"
-              placeholder="0x... (leave empty to mint to yourself)"
-            />
-            <p className="text-small mt-2">
-              💡 Leave empty to mint to your own wallet
-            </p>
+        <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {/* Left Column */}
+          <div className="space-y-6">
+            {/* Recipient Address */}
+            <div>
+              <label className="block text-white font-semibold mb-3 flex items-center gap-2">
+                <span>👤</span>
+                Recipient Address
+              </label>
+              <input
+                type="text"
+                name="recipient"
+                value={formData.recipient}
+                onChange={handleInputChange}
+                className="w-full bg-slate-700/50 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-white/40 focus:border-emerald-500 focus:outline-none transition-colors"
+                placeholder="0x... (leave empty to mint to yourself)"
+              />
+              <p className="text-emerald-400 text-sm mt-2 flex items-center gap-2">
+                <span>💡</span>
+                Leave empty to mint to your own wallet
+              </p>
+            </div>
+
+            {/* Carbon Amount */}
+            <div>
+              <label className="block text-white font-semibold mb-3 flex items-center gap-2">
+                <span>♻️</span>
+                Carbon Amount (tonnes CO₂) *
+              </label>
+              <input
+                type="number"
+                name="carbonAmount"
+                value={formData.carbonAmount}
+                onChange={handleInputChange}
+                required
+                min="0.1"
+                step="0.1"
+                className="w-full bg-slate-700/50 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-white/40 focus:border-emerald-500 focus:outline-none transition-colors"
+                placeholder="10.5"
+              />
+            </div>
+
+            {/* Project Name */}
+            <div>
+              <label className="block text-white font-semibold mb-3 flex items-center gap-2">
+                <span>🏗️</span>
+                Project Name *
+              </label>
+              <input
+                type="text"
+                name="projectName"
+                value={formData.projectName}
+                onChange={handleInputChange}
+                required
+                className="w-full bg-slate-700/50 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-white/40 focus:border-emerald-500 focus:outline-none transition-colors"
+                placeholder="Amazon Rainforest Preservation"
+              />
+            </div>
           </div>
 
-          {/* Carbon Amount */}
-          <div>
-            <label className="form-label">
-              Carbon Amount (tonnes CO₂) *
-            </label>
-            <input
-              type="number"
-              name="carbonAmount"
-              value={formData.carbonAmount}
-              onChange={handleInputChange}
-              required
-              min="0.1"
-              step="0.1"
-              className="form-input"
-              placeholder="10.5"
-            />
+          {/* Right Column */}
+          <div className="space-y-6">
+            {/* Location */}
+            <div>
+              <label className="block text-white font-semibold mb-3 flex items-center gap-2">
+                <span>📍</span>
+                Location *
+              </label>
+              <input
+                type="text"
+                name="location"
+                value={formData.location}
+                onChange={handleInputChange}
+                required
+                className="w-full bg-slate-700/50 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-white/40 focus:border-emerald-500 focus:outline-none transition-colors"
+                placeholder="Brazil, South America"
+              />
+            </div>
+
+            {/* Expiry Date */}
+            <div>
+              <label className="block text-white font-semibold mb-3 flex items-center gap-2">
+                <span>📅</span>
+                Expiry Date *
+              </label>
+              <input
+                type="date"
+                name="expiryDate"
+                value={formData.expiryDate}
+                onChange={handleInputChange}
+                required
+                min={new Date().toISOString().split('T')[0]}
+                className="w-full bg-slate-700/50 border border-white/20 rounded-xl px-4 py-3 text-white focus:border-emerald-500 focus:outline-none transition-colors"
+              />
+            </div>
+
+            {/* Description */}
+            <div>
+              <label className="block text-white font-semibold mb-3 flex items-center gap-2">
+                <span>📝</span>
+                Description
+              </label>
+              <textarea
+                name="description"
+                value={formData.description}
+                onChange={handleInputChange}
+                rows={4}
+                className="w-full bg-slate-700/50 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-white/40 focus:border-emerald-500 focus:outline-none transition-colors resize-none"
+                placeholder="Describe the carbon offset project and its environmental impact..."
+              />
+            </div>
           </div>
 
-          {/* Project Name */}
-          <div>
-            <label className="form-label">
-              Project Name *
-            </label>
-            <input
-              type="text"
-              name="projectName"
-              value={formData.projectName}
-              onChange={handleInputChange}
-              required
-              className="form-input"
-              placeholder="Amazon Rainforest Preservation"
-            />
+          {/* Submit Button - Full Width */}
+          <div className="md:col-span-2">
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="w-full bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-bold py-4 px-8 rounded-2xl transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-emerald-500/25 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+            >
+              {isLoading ? (
+                <div className="flex items-center justify-center gap-3">
+                  <div className="animate-spin rounded-full h-6 w-6 border-2 border-white border-t-transparent"></div>
+                  <span>Creating Carbon Credit...</span>
+                </div>
+              ) : (
+                <div className="flex items-center justify-center gap-3 text-lg">
+                  <span>🚀</span> 
+                  <span>Create Carbon Credit NFT</span>
+                </div>
+              )}
+            </button>
           </div>
-
-          {/* Location */}
-          <div>
-            <label className="form-label">
-              Location *
-            </label>
-            <input
-              type="text"
-              name="location"
-              value={formData.location}
-              onChange={handleInputChange}
-              required
-              className="form-input"
-              placeholder="Brazil, South America"
-            />
-          </div>
-
-          {/* Expiry Date */}
-          <div>
-            <label className="form-label">
-              Expiry Date *
-            </label>
-            <input
-              type="date"
-              name="expiryDate"
-              value={formData.expiryDate}
-              onChange={handleInputChange}
-              required
-              min={new Date().toISOString().split('T')[0]}
-              className="form-input"
-            />
-          </div>
-
-          {/* Description */}
-          <div>
-            <label className="form-label">
-              Description
-            </label>
-            <textarea
-              name="description"
-              value={formData.description}
-              onChange={handleInputChange}
-              rows={3}
-              className="form-input resize-none"
-              placeholder="Describe the carbon offset project..."
-            />
-          </div>
-
-          {/* Submit Button */}
-          <button
-            type="submit"
-            disabled={isLoading}
-            className="w-full btn-primary py-3 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {isLoading ? (
-              <div className="flex items-center justify-center gap-2">
-                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                Creating...
-              </div>
-            ) : (
-              <div className="flex items-center justify-center gap-2">
-                <span>🚀</span> 
-                Create Carbon Credit
-              </div>
-            )}
-          </button>
         </form>
 
-        {/* Info Box */}
-        <div className="mt-8 p-6 bg-blue-50 rounded-xl border border-blue-200">
-          <h4 className="font-semibold text-neutral-800 mb-3 flex items-center gap-2">
-            <span>ℹ️</span> Important Information
-          </h4>
-          <ul className="space-y-2 text-sm text-neutral-600">
-            <li className="flex items-start gap-2">
-              <span className="text-blue-500">•</span>
-              Only authorized verifiers can create carbon credits
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="text-blue-500">•</span>
-              Make sure you have proper permissions before creating
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="text-blue-500">•</span>
-              Credits are automatically verified by the contract
-            </li>
-          </ul>
+        {/* Info Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-10">
+          <div className="bg-gradient-to-br from-blue-500/20 to-blue-600/20 border border-blue-500/30 rounded-2xl p-6 text-center">
+            <div className="text-3xl mb-3">🔒</div>
+            <h4 className="text-blue-400 font-semibold mb-2">Verified Only</h4>
+            <p className="text-white/60 text-sm">Only authorized verifiers can create carbon credits</p>
+          </div>
+          
+          <div className="bg-gradient-to-br from-emerald-500/20 to-emerald-600/20 border border-emerald-500/30 rounded-2xl p-6 text-center">
+            <div className="text-3xl mb-3">⚡</div>
+            <h4 className="text-emerald-400 font-semibold mb-2">Instant Minting</h4>
+            <p className="text-white/60 text-sm">Credits are automatically verified by smart contract</p>
+          </div>
+          
+          <div className="bg-gradient-to-br from-purple-500/20 to-purple-600/20 border border-purple-500/30 rounded-2xl p-6 text-center">
+            <div className="text-3xl mb-3">🌍</div>
+            <h4 className="text-purple-400 font-semibold mb-2">Global Impact</h4>
+            <p className="text-white/60 text-sm">Contribute to worldwide carbon offset initiatives</p>
+          </div>
         </div>
       </div>
     </div>

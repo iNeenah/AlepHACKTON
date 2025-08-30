@@ -1,26 +1,56 @@
 {
   "name": "carbon-credit-marketplace",
   "version": "1.0.0",
-  "description": "Decentralized Carbon Credit Marketplace on Blockchain",
+  "description": "A revolutionary decentralized marketplace for verified carbon credits powered by Symbiotic Protocol's tranche-based vaults",
   "type": "module",
   "main": "index.js",
+  "homepage": "https://github.com/iNeenah/AlepHACKTON",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/iNeenah/AlepHACKTON.git"
+  },
+  "bugs": {
+    "url": "https://github.com/iNeenah/AlepHACKTON/issues"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "lint:fix": "next lint --fix",
+    "type-check": "tsc --noEmit",
     "compile": "hardhat compile",
     "test": "hardhat test",
-    "deploy": "hardhat run scripts/deploy.js"
+    "test:coverage": "hardhat coverage",
+    "deploy": "hardhat run scripts/deploy.js",
+    "deploy:localhost": "hardhat run scripts/deploy.js --network localhost",
+    "deploy:sepolia": "hardhat run scripts/deploy.js --network sepolia",
+    "deploy:mainnet": "hardhat run scripts/deploy.js --network mainnet",
+    "verify:sepolia": "hardhat verify --network sepolia",
+    "verify:mainnet": "hardhat verify --network mainnet",
+    "node": "hardhat node",
+    "clean": "hardhat clean && rm -rf .next",
+    "demo-data": "hardhat run scripts/demoData.js --network localhost",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "setup": "node scripts/setup.js"
   },
   "dependencies": {
     "@openzeppelin/contracts": "^5.4.0",
+    "@radix-ui/react-dialog": "^1.1.15",
+    "@radix-ui/react-separator": "^1.1.7",
+    "@radix-ui/react-slot": "^1.2.3",
+    "@radix-ui/react-tooltip": "^1.2.8",
     "@walletconnect/web3-provider": "^1.8.0",
     "axios": "^1.11.0",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
     "ethers": "^6.15.0",
+    "lucide-react": "^0.542.0",
     "next": "^14.2.32",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "tailwind-merge": "^3.3.1",
     "tailwindcss": "^4.1.12",
     "web3modal": "^1.9.12"
   },
@@ -34,6 +64,7 @@
     "eslint-config-next": "^14.2.32",
     "hardhat": "^2.26.3",
     "postcss": "^8.5.6",
+    "prettier": "^3.0.0",
     "typescript": "^5.9.2"
   },
   "keywords": [
@@ -41,8 +72,41 @@
     "carbon-credits",
     "defi",
     "environmental",
-    "marketplace"
+    "marketplace",
+    "symbiotic",
+    "ethereum",
+    "nft",
+    "sustainability",
+    "climate-change",
+    "web3",
+    "dapp"
   ],
-  "author": "Carbon Credit Marketplace Team",
-  "license": "MIT"
+  "author": {
+    "name": "Carbon Credit Marketplace Team",
+    "email": "team@carboncreditmarketplace.com",
+    "url": "https://carboncreditmarketplace.com"
+  },
+  "contributors": [
+    {
+      "name": "Your Name",
+      "email": "your.email@example.com"
+    }
+  ],
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
 }

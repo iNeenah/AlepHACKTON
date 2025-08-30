@@ -1,0 +1,433 @@
+Overview
+Symbiotic is a shared security protocol designed to create a marketplace for economic security. It enables networks that need security to access it from those who have assets to stake, creating an efficient ecosystem where stake can be shared and utilized across multiple networks. Through its flexible architecture, stake providers can maximize their returns while networks can obtain the security guarantees they need.
+
+🏆 Prize breakdown
+Total Prize Pool: up to $10 000 (to be distributed among the best projects)
+
+🧑‍💻 Use cases & track focus
+Implement a Symbiotic Network using Relay SDK
+Implement a Symbiotic Vault wrapping solution that implements Tranche-Based Yield Vault Architecture
+Implement LayerZero DVN (on-chain + off-chain components) secured by stake from Symbiotic vault
+Alternative: Implement Hyperlane ISM secured by stake from the Symbiotic vault
+Analytics Bounties: Public Symbiotic data Indexer or Symbiotic Stakers Analytics
+🛠️ Tech requirements
+For Developer bounties, the solution must use tools referenced in bounty descriptions
+For Analytics bounties, the solution must use The Graph (1st bounty) or Dune (2nd bounty)
+📚 Developer resources
+Dev portal: https://docs.symbiotic.fi
+GitHub repos:
+https://github.com/symbioticfi/core
+https://github.com/symbioticfi/relay
+https://github.com/symbioticfi/relay-contracts
+Starter kit for building a Symbiotic Network:
+https://github.com/symbioticfi/symbiotic-super-sum
+Support:
+You can get support in the Symbiotic topic in the Hackathon Chat
+💬 Mentors
+Algys (@algys) - CTO
+Henrique (@henrique_dias3) - Protocol Specialist
+Andrey (@kresh_one) - Smart-Contract Lead
+Alex (@grablevski) - Head of Analytics
+⚠️ Please ping them directly in Symbiotic's dedicated topic in our hackathon Telegram group chat (no dm)
+
+🎓 Judges
+Algys (@algys) - CTO
+Henrique (@henrique_dias3) - Protocol Specialist
+Andrey (@kresh_one) - Smart-Contract Lead
+Alex (@grablevski) - Head of Analytics
+
+# Build Multichain Applications with Symbiotic’s Relay SDK
+
+# 🔎 The Symbiotic Relay SDK Explained
+
+The **Symbiotic Relay SDK** enables multichain settlement and verification, backed by universal staking:
+
+- 📖 **General Overview:** [Symbiotic Relay: Taking Universal Staking Multichain](https://www.notion.so/Symbiotic-Relay-Taking-Universal-Staking-Multichain-1ee81c079c178074b192cd70a363c7b2?pvs=21)
+- 💻 **Codebase:** ‣
+- 🌐 **Offchain Sidecar Network:** https://github.com/symbioticfi/relay
+
+---
+
+## 🚀 Getting Started with the Symbiotic Relay SDK
+
+The **Relay SDK** gives you all the pieces to build a multichain app backed by Symbiotic’s universal staking.
+
+### 1. Deploy the Core Contracts
+
+Start on one chain (EVM):
+
+- **Network** – defines your app’s network ID.
+- **VotingPowerProvider** – points to the Symbiotic vaults you want to use for security (can be a single vault or multiple).
+- **KeyRegistry** – where operators register their BLS keys.
+- **ValSetDriver** – derives validator sets each epoch using the above.
+- **Settlement** – per-chain verifier contract, connected to either `SigVerifierBlsBn254Simple` (for small sets) or `SigVerifierBlsBn254ZK` (for large sets).
+
+👉 After deployment, you’ll have a functioning “security backend” for your app.
+
+---
+
+### 2. Run the Off-Chain Relay
+
+Spin up the **Relay binary** (provided in the SDK). It has three roles:
+
+- **Signer** – each operator runs one, signs messages with their BLS key.
+- **Aggregator** – collects partial signatures, produces an aggregate signature (and zkProof if using ZK).
+- **Committer** – publishes validator set headers to your `Settlement` contract.
+
+👉 Together, this sidecar network makes your validator set usable for verification on any chain.
+
+---
+
+### 3. Define Your App Logic
+
+Decide what your app should verify. Examples:
+
+- *A cross-chain attestation that an event happened on Chain A.*
+- *A fast-finality vote that a rollup block is valid.*
+- *A simple “message attestor” for a bridge or oracle.*
+
+You’ll define a message hash (H = keccak256 of the fields you care about) and use the Relay network to sign it.
+
+---
+
+### 4. Verify in Your App Contract
+
+On the destination chain, your app calls into `Settlement`:
+
+- `Settlement.verifySignature(H, aggSig, proof)` → returns `true` if a quorum of staked operators signed your message.
+- Based on this, your app can unlock funds, finalize data, or trigger downstream logic.
+
+👉 This is where your hackathon creativity comes in: what you **do** once verification passes.
+
+---
+
+### 5. Put It All Together
+
+Your final deliverable should show:
+
+- Stakers deposit into a Symbiotic vault.
+- Operators register keys and run relay nodes.
+- The Relay commits a validator set header.
+- Your app submits a message + aggregated signature.
+- `Settlement` verifies it → your app acts on it.
+
+That’s a full Symbiotic Network demo.
+
+---
+
+💡 **Tip:** Don’t overbuild. Start with a minimal app: e.g. “Cross-chain message attestor” where an event on Sepolia gets signed by your Relay and then verified on Base testnet by your app. Once that pipeline works, add extras like multi-asset staking or ZK verification.
+# Symbiotic Tranche-Based Yield Vault Architecture
+
+## Introduction
+
+A **mortgage-backed security (MBS)** is a financial instrument created by pooling together many individual home loans (mortgages) and selling them as a single tradable security. Instead of a bank holding a mortgage and collecting monthly payments, the cash flows (interest and principal) from thousands of mortgages are bundled, then redistributed to investors in the MBS.
+
+- **Tranching**: To cater to different investor risk appetites, the pool is divided into **tranches**.
+    - Senior tranches: Get paid first, lower risk, lower yield.
+    - Junior tranches: Get paid later and absorb defaults first, higher risk, higher yield.
+- **Risk distribution**: This structure spreads default risk across different investor groups and creates a market for varying levels of risk exposure.
+
+![Figure 1 - Mortgage Backed Securities Structuring and Value Chain](attachment:b784cb1c-c694-4c53-a7f3-d2ccdc12fe4b:All_Hands_Symbiotic_Aug_11.png)
+
+Figure 1 - Mortgage Backed Securities Structuring and Value Chain
+
+## Symbiotic Vaults Explained
+
+Vaults are the delegation and staking management layer of Symbiotic. They handle three crucial parts of the Symbiotic economy:
+
+- **Accounting:** Vaults handle deposits, withdrawals, and slashings of collaterals and, in turn, their underlying assets.
+- **Delegation Strategies:** Vault deployers/owners define delegation and restaking strategies to operators across Symbiotic networks, which networks have to opt into.
+- **Slashing Processing:** Vaults provide a mechanism to preserve networks' economic security guarantees via slashing.
+
+![Figure 2 - Symbiotic Vault-related Stakeholders and High-Level Overview](attachment:7cd029c4-8151-4c48-9aa5-d5abeb910abb:image.png)
+
+Figure 2 - Symbiotic Vault-related Stakeholders and High-Level Overview
+
+https://docs.symbiotic.fi/modules/vault/introduction
+
+https://github.com/symbioticfi/core/tree/main/src/contracts/vault
+
+## Slashing Tranche-Based Vault Wrapper
+
+### Description
+
+In Symbiotic, **slashing vaults** are pools where collateral is staked to secure external networks or services. Just like mortgages carry **default risk**, staking carries **slashing risk** (collateral may be cut if operators misbehave).
+
+Here’s how the analogy works:
+
+- **Mortgages = Operator Collateral Positions**
+    
+    Each mortgage in an MBS corresponds to an individual operator’s staked collateral in Symbiotic. Just as homeowners may default, operators may be slashed.
+    
+- **MBS Pool = Slashing Vault**
+    
+    The pooled mortgages in an MBS map to the **vault of collateral** in Symbiotic. Both aggregate risk into a collective structure.
+    
+- **Tranches = Vault Risk Segmentation**
+    
+    Symbiotic vaults could be designed with **tranches** similar to MBS:
+    
+    - Senior tranche: Investors who want safer exposure get priority in withdrawals and protection against small slashes (absorbed by junior tranches first).
+    - Mezzanine tranche: Medium-risk exposure, takes losses only after juniors are hit.
+    - Junior tranche: Risk-seeking investors absorb slashing losses first but get higher yield (greater share of staking rewards).
+- **Cash Flows = Staking Rewards**
+    
+    Just as mortgages generate interest payments, collateral in slashing vaults generates staking rewards or fees. These flows are redistributed to participants, depending on their tranche.
+    
+- **Risk Transformation**
+    
+    MBS transform mortgage default risk into tiered securities with different profiles. Symbiotic vaults could similarly transform **slashing risk** into structured exposure, letting risk-averse and risk-seeking participants coexist in the same vault.
+    
+
+![Figure 3 - Tranche-Based (or Slashing Insurance) Vault Segmentation + Redistribution](attachment:bcddd05c-c061-4c87-bce3-32dea0345482:All_Hands_Symbiotic_Aug_11_(3).png)
+
+Figure 3 - Tranche-Based (or Slashing Insurance) Vault Segmentation + Redistribution
+
+### Implementation
+
+A user (staker) would have 3 choices to deposit a single ERC20 asset (collateral) into a Symbiotic vault. They can either deposit into the junior, mezzanine or senior tranche, according to their risk-profile or portfolio fit. The vault wrapper contract would then deposit the collateral to the Symbiotic vault, and the user would receive (or not, depending on the curator choice) an LST.
+
+From our understanding, there may be 2 possibilities to issue the receipt token:
+
+**Model A — 3 Separate ERC20s (most common in structured products)**
+
+- When a user deposits, they **choose the tranche** (junior, mezzanine, senior).
+- The wrapper mints them **only that tranche token (LST)**.
+- Example:
+    - Alice deposits 100 USDC → gets **100 tJNR**.
+    - Bob deposits 100 USDC → gets **100 tSNR**.
+
+**Model B — 1 ERC20 + internal “tranche shares” accounting**
+
+- Users deposit into the wrapper without selecting a tranche.
+- The wrapper automatically allocates the deposit across junior, mezz, and senior according to some fixed ratio (e.g., 20/30/50).
+- The user receives **one unified wrapper-LST** (e.g., `tWRAP`).
+
+![Figure 4 - Tranche-Based Vault Proposed Implementation](attachment:fbc0e241-c454-45ad-9d25-6b19b6f6e933:All_Hands_Symbiotic_Aug_11_(1).png)
+
+Figure 4 - Tranche-Based Vault Proposed Implementation
+
+The entire paper, co-authored with ReSquared can be found here: https://github.com/dias-henrique/Slashing-Insurance-Vaults/blob/main/CESIV.pdf
+Build Stake-Backed Layerzero’s DVNs with Symbiotic’s Relay
+🔎 Introduction: How LayerZero’s DVN Works
+1. Context: Cross-Chain Messaging
+LayerZero is a messaging protocol that lets smart contracts on one chain communicate with contracts on another. The core problem: how can Chain A know that a message claimed to come from Chain B is real and was finalized on B?
+Traditionally, cross-chain systems use:
+Relayers (trusted parties) → centralized, trust-heavy.
+Light clients → secure, but expensive in gas to run on-chain.
+Oracles (like Chainlink) → secure, but often centralized or limited in flexibility.
+LayerZero’s innovation is to separate roles and make them modular and pluggable.
+2. The DVN: Decentralized Verifier Network
+The DVN is a network of independent entities that verify messages across chains. Instead of trusting a single relayer or oracle, applications on LayerZero can pick one or multiple DVNs to secure their communication.
+Key Roles:
+Relayer: Transports the raw message data from source to destination.
+DVN: Verifies the validity of that message (was it actually finalized on the source chain?).
+An application specifies which DVNs it trusts. The DVN set collectively attests that the source chain event was valid before the message is delivered on the destination chain.
+3. How It Works (High-Level Flow)
+Message Sent: A user on Chain A triggers a transaction that emits an event.
+Relayer Submits Proof: A relayer submits the message data + proof of inclusion (e.g. Merkle proof of event in Chain A’s block).
+DVN Verification: The DVN independently fetches the source chain block data and checks:
+Was this block finalized on Chain A?
+Does the proof match the event logs?
+Does Chain A’s consensus support this inclusion?
+Quorum Reached: If enough DVN members (or the required subset chosen by the app) agree, they sign/attest.
+Message Delivered: Once verified, the message is executed on Chain B.
+This design means LayerZero isn’t tied to one security provider. Applications can:
+Use LayerZero’s default DVN (a robust, permissioned set of verifiers).
+Plug in their own DVN (custom governance, e.g. a DAO’s validator set).
+Mix multiple DVNs for redundancy (like requiring both Chainlink and LayerZero DVN to agree).
+4. How to build DVNs: LayerZero​
+🔎 The Symbiotic Relay SDK Explained
+The Symbiotic Relay SDK enables multichain settlement and verification, backed by universal staking:
+📖 General Overview: Symbiotic Relay: Taking Universal Staking Multichain 
+💻 Codebase: ​
+🌐 Offchain Sidecar Network: relay​
+🔎 Proposed Project
+In this track you’ll be building a Decentralized Verifier Network (DVN) that plugs directly into LayerZero’s ULN, but instead of relying on a static committee, the security of your DVN will be backed by Symbiotic vaults. Stakers deposit assets (wstETH, stablecoins, LSTs, POL, etc.) into Symbiotic vaults, operators opt-in, and the Relay SDK derives a validator set weighted by that economic stake. Off-chain relay nodes aggregate validator signatures, while on-chain Settlement contracts verify them using BLS or zk-based aggregation. Your DVN contract then exposes the standard LayerZero DVN interface (assignJob, getFee) and, once a quorum is proven via Settlement, marks packets as verified for ULN.
+What you’ll deliver is a custom DVN worker + Solidity DVN contract that ties these pieces together: a worker that listens for PacketSent / DVNFeePaid events, requests aggregated signatures from the Symbiotic Relay network, and submits them to your DVN contract; and a contract that calls into the Symbiotic Settlement verifier before passing verification into ULN. The end result is an application-selectable DVN that any OApp can include in its LayerZero security stack, providing developers with a “secure by stake” verification layer that can be generalized to any chain and any asset, powered by Symbiotic’s multi-asset economic guarantees.
+Example Diagram, for Symbiotic POL Vaults on the Polygon Network, securing USDT0 DVN Routes:
+
+Proposed Codebase Structure
+symbiotic “relay contracts” layer (security + validator set)
+Network: the canonical network id for your DVN within the symbiotic ecosystem.
+VotingPowerProvider: derives voting power from vault stake(s); this is where you plug Symbiotic ERC20-collateral vaults and any weighting/slashing extensions. integrates with VaultFactory, OperatorRegistry.
+KeyRegistry: stores operators’ BLS BN254 and/or ECDSA keys.
+ValSetDriver: exposes epoched validator sets to the off-chain Relay nodes.
+Settlement: per-chain contract that commits compressed validator-set headers and verifies aggregated signatures using either
+SigVerifierBlsBn254Simple (linear, ≤~125 validators) or
+SigVerifierBlsBn254ZK (near-constant gas) with circuits like Verifier_100/1000. 
+a typical “quick start” deploy wires up: MyNetwork, VotingPowerProvider, MyKeyRegistry, MyValSetDriver, MySettlement. the Relay binary later uses ValSetDriver and commits headers into each Settlement. docs.symbiotic.fi
+relay binary (off-chain, ships in the sdk)
+runs in three modes: Signer, Aggregator, Committer.
+Signers produce BLS partials; Aggregators aggregate; Committers push ValSetHeader and proofs to Settlement.
+layerzero DVN layer
+a DVN contract implementing ILayerZeroDVN with assignJob and getFee deployed on every chain you support.
+your DVN worker watches PacketSent and DVNFeePaid, fetches confirmations from the message lib config, then performs verification and calls ULN._verify on the destination chain.
+@ivan shall we include the diagram with POL example?
+@ivan you’re the only one with access to excalidraw - can you pls 
+
+Mejorar la interfaz adaptandola a la que ya tenemos 
+<html><head>
+<meta charset="utf-8"/>
+<link crossorigin="" href="https://fonts.gstatic.com/" rel="preconnect"/>
+<link as="style" href="https://fonts.googleapis.com/css2?display=swap&amp;family=Noto+Sans%3Awght%40400%3B500%3B700%3B900&amp;family=Spline+Sans%3Awght%40400%3B500%3B700" onload="this.rel='stylesheet'" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<title>Stitch Design</title>
+<link href="data:image/x-icon;base64," rel="icon" type="image/x-icon"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<style type="text/tailwindcss">
+      :root {
+        --primary-color: #4f46e5;--accent-color: #f97316;--success-color: #22c55e;--secondary-color: #8b5cf6;--background-start: #0f172a;--background-end: #1e293b;}
+      .glow-effect {
+        box-shadow: 0 0 10px var(--accent-color), 0 0 20px var(--accent-color), 0 0 30px var(--accent-color);
+      }
+      @keyframes float {
+        0%, 100% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-20px);
+        }
+      }
+      .floating-animation {
+        animation: float 6s ease-in-out infinite;
+      }
+      .card-gradient {
+        background-image: radial-gradient(circle at 50% 0, rgba(79, 70, 229, 0.1), transparent 40%);
+      }
+    </style>
+</head>
+<body class="bg-slate-900 text-white">
+<div class="relative flex size-full min-h-screen flex-col dark group/design-root overflow-x-hidden" style='font-family: "Spline Sans", "Noto Sans", sans-serif;'>
+<div class="layout-container flex h-full grow flex-col">
+<header class="fixed top-0 left-0 right-0 z-50 flex items-center justify-between whitespace-nowrap px-10 py-5 bg-slate-900/80 backdrop-blur-md border-b border-white/10">
+<div class="flex items-center gap-3 text-white">
+<svg class="h-8 w-8" fill="none" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<path d="M4 42.4379C4 42.4379 14.0962 36.0744 24 41.1692C35.0664 46.8624 44 42.2078 44 42.2078L44 7.01134C44 7.01134 35.068 11.6577 24.0031 5.96913C14.0971 0.876274 4 7.27094 4 7.27094L4 42.4379Z" fill="var(--primary-color)"></path>
+</svg>
+<h2 class="text-white text-xl font-bold tracking-tight">BlockChain</h2>
+</div>
+<div class="flex flex-1 justify-end items-center gap-6">
+<nav class="hidden md:flex items-center gap-6">
+<a class="text-white/80 hover:text-white transition-colors text-base font-medium" href="#">Products</a>
+<a class="text-white/80 hover:text-white transition-colors text-base font-medium" href="#">Solutions</a>
+<a class="text-white/80 hover:text-white transition-colors text-base font-medium" href="#">Resources</a>
+<a class="text-white/80 hover:text-white transition-colors text-base font-medium" href="#">Company</a>
+</nav>
+<button class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-10 px-6 bg-indigo-500 text-white text-base font-bold tracking-tight hover:bg-indigo-600 transition-all duration-300 transform hover:scale-105">
+<span class="truncate">Get Started</span>
+</button>
+<button class="md:hidden text-white">
+<span class="material-symbols-outlined text-3xl">menu</span>
+</button>
+</div>
+</header>
+<main class="flex-1 pt-20">
+<section class="relative min-h-[90vh] flex items-center justify-center text-center px-4 overflow-hidden">
+<div class="absolute inset-0 bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 z-10 opacity-80"></div>
+<div class="absolute inset-0 z-0">
+<video autoplay="" class="w-full h-full object-cover opacity-20" loop="" muted="" playsinline="">
+<source src="https://lh3.googleusercontent.com/aida-public/AB6AXuAnf8a_9mUe6tJ2-hQ8p_09292a-i0P-9qj8-0i8j-h-0p-c-0c-s-0s-0c-0-s-0s/s0/d/aida-public/AB6AXuAnf8a_9mUe6tJ2-hQ8p_09292a-i0P-9qj8-0i8j-h-0p-c-0c-s-0s-0c-0-s-0s.mp4" type="video/mp4"/>
+</video>
+</div>
+<div class="absolute -top-1/4 -left-1/4 w-1/2 h-1/2 bg-indigo-500/20 rounded-full blur-[150px] floating-animation"></div>
+<div class="absolute -bottom-1/4 -right-1/4 w-1/2 h-1/2 bg-purple-500/20 rounded-full blur-[150px] floating-animation" style="animation-delay: 3s;"></div>
+<div class="relative z-20 max-w-4xl mx-auto flex flex-col items-center gap-8">
+<h1 class="text-5xl md:text-8xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-400">
+                The Future of Decentralization
+              </h1>
+<p class="text-lg md:text-xl text-white/80 max-w-2xl">
+                Empowering businesses and developers with cutting-edge, secure, and scalable blockchain technology.
+              </p>
+<button class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-14 px-10 bg-orange-500 text-white text-lg font-bold tracking-tight glow-effect hover:bg-orange-600 hover:scale-105 transition-all duration-300">
+<span class="truncate">Explore Platform</span>
+</button>
+</div>
+</section>
+<section class="px-4 py-20 md:px-10 md:py-32 bg-slate-800">
+<div class="max-w-6xl mx-auto">
+<div class="text-center mb-20">
+<h2 class="text-4xl md:text-5xl font-bold tracking-tighter">Key Features</h2>
+<p class="text-lg text-white/60 mt-4 max-w-3xl mx-auto">
+                  Our platform offers a comprehensive suite of features designed to meet the evolving needs of businesses and developers in the blockchain space.
+                </p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+<div class="bg-slate-900/50 p-8 rounded-2xl border border-white/10 card-gradient transition-all duration-300 hover:border-indigo-500 hover:-translate-y-2">
+<div class="text-green-500 mb-4"><span class="material-symbols-outlined text-4xl">encrypted</span></div>
+<h3 class="text-xl font-bold mb-2">Unmatched Security</h3>
+<p class="text-white/70">State-of-the-art cryptographic protocols to protect your assets and data against all threats.</p>
+</div>
+<div class="bg-slate-900/50 p-8 rounded-2xl border border-white/10 card-gradient transition-all duration-300 hover:border-indigo-500 hover:-translate-y-2">
+<div class="text-green-500 mb-4"><span class="material-symbols-outlined text-4xl">rocket_launch</span></div>
+<h3 class="text-xl font-bold mb-2">Hyper Scalability</h3>
+<p class="text-white/70">Engineered for high-throughput and low latency to support enterprise-grade applications.</p>
+</div>
+<div class="bg-slate-900/50 p-8 rounded-2xl border border-white/10 card-gradient transition-all duration-300 hover:border-indigo-500 hover:-translate-y-2">
+<div class="text-green-500 mb-4"><span class="material-symbols-outlined text-4xl">hub</span></div>
+<h3 class="text-xl font-bold mb-2">Seamless Integration</h3>
+<p class="text-white/70">Developer-friendly APIs and SDKs for easy integration with existing systems.</p>
+</div>
+</div>
+</div>
+</section>
+<section class="px-4 py-20 md:px-10 md:py-32 bg-slate-900">
+<div class="max-w-6xl mx-auto">
+<div class="text-center mb-20">
+<h2 class="text-4xl md:text-5xl font-bold tracking-tighter">Unlock the Potential of Blockchain</h2>
+<p class="text-lg text-white/60 mt-4 max-w-3xl mx-auto">
+                  Experience the transformative power of blockchain technology with our user-friendly platform.
+                </p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+<div class="bg-slate-800 p-8 rounded-2xl border border-white/10 card-gradient transition-all duration-300 hover:border-purple-500 hover:-translate-y-2">
+<div class="text-purple-500 mb-4"><span class="material-symbols-outlined text-4xl">groups</span></div>
+<h3 class="text-xl font-bold mb-2">Enhanced Collaboration</h3>
+<p class="text-white/70">Seamlessly collaborate with partners and stakeholders in a secure and transparent environment.</p>
+</div>
+<div class="bg-slate-800 p-8 rounded-2xl border border-white/10 card-gradient transition-all duration-300 hover:border-purple-500 hover:-translate-y-2">
+<div class="text-purple-500 mb-4"><span class="material-symbols-outlined text-4xl">analytics</span></div>
+<h3 class="text-xl font-bold mb-2">Data-Driven Insights</h3>
+<p class="text-white/70">Gain valuable insights from real-time data and analytics to optimize your blockchain strategies.</p>
+</div>
+<div class="bg-slate-800 p-8 rounded-2xl border border-white/10 card-gradient transition-all duration-300 hover:border-purple-500 hover:-translate-y-2">
+<div class="text-purple-500 mb-4"><span class="material-symbols-outlined text-4xl">schedule</span></div>
+<h3 class="text-xl font-bold mb-2">Time-Efficient Processes</h3>
+<p class="text-white/70">Streamline operations and reduce processing times with automated workflows.</p>
+</div>
+</div>
+</div>
+</section>
+<section class="px-4 py-20 md:px-10 md:py-32 text-center bg-slate-800 relative overflow-hidden">
+<div class="absolute inset-0 bg-grid-white/[0.05]"></div>
+<div class="absolute inset-0 bg-gradient-to-t from-slate-800 to-transparent"></div>
+<div class="max-w-3xl mx-auto relative z-10">
+<h2 class="text-4xl md:text-5xl font-bold tracking-tighter">Ready to Build the Future?</h2>
+<p class="text-lg text-white/60 mt-4 max-w-2xl mx-auto">Join the revolution and start building your decentralized application on the most advanced blockchain platform.</p>
+<div class="mt-10">
+<button class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-14 px-10 bg-orange-500 text-white text-lg font-bold tracking-tight mx-auto glow-effect hover:bg-orange-600 hover:scale-105 transition-all duration-300">
+<span class="truncate">Get Started Now</span>
+</button>
+</div>
+</div>
+</section>
+</main>
+<footer class="px-5 py-10 border-t border-white/10 bg-slate-900">
+<div class="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
+<div class="flex items-center gap-3 text-white">
+<svg class="h-6 w-6" fill="none" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<path d="M4 42.4379C4 42.4379 14.0962 36.0744 24 41.1692C35.0664 46.8624 44 42.2078 44 42.2078L44 7.01134C44 7.01134 35.068 11.6577 24.0031 5.96913C14.0971 0.876274 4 7.27094 4 7.27094L4 42.4379Z" fill="var(--primary-color)"></path>
+</svg>
+<h2 class="text-lg font-bold tracking-tight">BlockChain</h2>
+</div>
+<div class="flex flex-wrap items-center justify-center gap-6">
+<a class="text-white/70 hover:text-white transition-colors text-base" href="#">Privacy Policy</a>
+<a class="text-white/70 hover:text-white transition-colors text-base" href="#">Terms of Service</a>
+<a class="text-white/70 hover:text-white transition-colors text-base" href="#">Contact Us</a>
+</div>
+<p class="text-white/50 text-base">© 2024 BlockChain. All rights reserved.</p>
+</div>
+</footer>
+</div>
+</div>
+</body></html>
