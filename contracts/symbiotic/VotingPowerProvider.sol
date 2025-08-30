@@ -2,7 +2,7 @@
 pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 /**
@@ -69,6 +69,22 @@ contract VotingPowerProvider is Ownable, ReentrancyGuard {
     uint256 public constant MAX_VAULTS = 50;
     
     // =====================================================
+    // CONSTRUCTOR
+    // =====================================================
+    
+    constructor(address initialOwner) Ownable(initialOwner) {
+        // Initialize tranche weights
+        trancheWeights[TrancheType.SENIOR] = 5000;    // 50%
+        trancheWeights[TrancheType.MEZZANINE] = 3000; // 30%
+        trancheWeights[TrancheType.JUNIOR] = 2000;    // 20%
+        
+        // Initialize first epoch
+        currentEpoch = 1;
+        epochs[1].startBlock = block.number;
+        epochs[1].endBlock = block.number + epochDuration;
+    }
+    
+    // =====================================================
     // EVENTS
     // =====================================================
     
@@ -101,20 +117,7 @@ contract VotingPowerProvider is Ownable, ReentrancyGuard {
     }
     
     // =====================================================
-    // CONSTRUCTOR
-    // =====================================================
-    
-    constructor() {
-        // Initialize first epoch
-        currentEpoch = 1;
-        epochs[currentEpoch].startBlock = block.number;
-        epochs[currentEpoch].endBlock = block.number + epochDuration;
-        
-        // Set default tranche weights
-        trancheWeights[TrancheType.SENIOR] = 8000;      // 80% - Lower risk, stable returns
-        trancheWeights[TrancheType.MEZZANINE] = 6000;   // 60% - Medium risk
-        trancheWeights[TrancheType.JUNIOR] = 4000;      // 40% - Higher risk, higher yield
-    }
+
     
     // =====================================================
     // VAULT MANAGEMENT

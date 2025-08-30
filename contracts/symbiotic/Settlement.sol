@@ -2,7 +2,7 @@
 pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "./ValSetDriver.sol";
 
 /**
@@ -134,7 +134,7 @@ contract Settlement is Ownable, ReentrancyGuard {
     // CONSTRUCTOR
     // =====================================================
     
-    constructor(address _valSetDriver) {
+    constructor(address _valSetDriver, address initialOwner) Ownable(initialOwner) {
         require(_valSetDriver != address(0), "Invalid ValSetDriver address");
         valSetDriver = ValSetDriver(_valSetDriver);
     }

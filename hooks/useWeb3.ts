@@ -3,8 +3,8 @@
 import React, { useState, useEffect, createContext, useContext } from 'react'
 import { ethers } from 'ethers'
 
-// Contract ABI and address
-const CONTRACT_ADDRESS = '0x5FbDB2315678afecb367f032d93F642f64180aa3'
+// Contract ABI and address - will be updated after deployment
+const CONTRACT_ADDRESS = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS || '0x5FbDB2315678afecb367f032d93F642f64180aa3'
 const CONTRACT_ABI = [
   // Add your contract ABI here
   "function mintCarbonCredit(address to, uint256 carbonAmount, string memory projectName, string memory location, uint256 expiryDate, string memory metadataURI) external",

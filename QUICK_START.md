@@ -1,128 +1,130 @@
-# ⚡ Quick Start Guide
+# 🚀 Quick Start Guide
 
-¿Quieres probar el Carbon Credit Marketplace rápidamente? ¡Aquí tienes las opciones más rápidas!
+Get your Carbon Credit Marketplace running in minutes!
 
-## 🚀 Deploy Instantáneo (1 clic)
+## Prerequisites
 
-### Opción 1: Deploy a Vercel (Recomendado)
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/iNeenah/AlepHACKTON/tree/main/hackaton)
+- **Node.js** v18 or higher
+- **npm** or **yarn**
+- **MetaMask** browser extension
+- **Git**
 
-1. Haz clic en el botón de arriba
-2. Conecta tu cuenta de GitHub
-3. Configura las variables de entorno (opcional para demo)
-4. ¡Deploy automático en 2-3 minutos!
+## 🎯 One-Command Demo Setup
 
-### Opción 2: Deploy a Netlify
-[![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/iNeenah/AlepHACKTON)
-
-## 💻 Desarrollo Local (5 minutos)
-
-### Setup Automático
+### Option 1: Full Demo (Recommended)
 ```bash
-git clone https://github.com/iNeenah/AlepHACKTON.git
-cd AlepHACKTON/hackaton
-npm run setup
-```
-
-### Setup Manual
-```bash
-# 1. Clonar repositorio
+# Clone the repository
 git clone https://github.com/iNeenah/AlepHACKTON.git
 cd AlepHACKTON/hackaton
 
-# 2. Instalar dependencias
+# Install dependencies
 npm install
 
-# 3. Configurar entorno
-cp .env.example .env.local
-
-# 4. Compilar contratos
-npm run compile
-
-# 5. Iniciar blockchain local
+# Start local blockchain (keep this terminal open)
 npx hardhat node
 
-# 6. En otra terminal: Deploy contratos
-npm run deploy:localhost
+# In a new terminal, deploy and setup demo
+npm run demo
 
-# 7. Crear datos de demo
-npm run demo-data
-
-# 8. Iniciar aplicación
+# Start the app
 npm run dev
 ```
 
-## 🐳 Docker (1 comando)
-
+### Option 2: Manual Setup
 ```bash
+# 1. Clone & Install
 git clone https://github.com/iNeenah/AlepHACKTON.git
 cd AlepHACKTON/hackaton
-docker-compose up
-```
-
-## 📱 Demo Online
-
-Si solo quieres ver cómo funciona:
-- **Live Demo**: [Próximamente]
-- **Video Demo**: [Próximamente]
-- **Screenshots**: Ver carpeta `/docs/screenshots`
-
-## 🎯 Para Hackathons
-
-### Presentación Rápida (2 minutos)
-1. Abre [Vercel Deploy](https://vercel.com/new/clone?repository-url=https://github.com/iNeenah/AlepHACKTON/tree/main/hackaton)
-2. Deploy automático
-3. Muestra la aplicación funcionando
-4. Explica las características principales
-
-### Demo Completo (10 minutos)
-1. Setup local con `npm run setup`
-2. Muestra el código de los smart contracts
-3. Demuestra la funcionalidad completa
-4. Explica la integración con Symbiotic
-
-## 🔧 Configuración Mínima
-
-Para que funcione solo necesitas:
-- Node.js 18+
-- npm
-- Un navegador moderno
-
-¡Eso es todo! El resto se configura automáticamente.
-
-## 🆘 ¿Problemas?
-
-### Errores Comunes
-
-**Error: Module not found**
-```bash
-rm -rf node_modules package-lock.json
 npm install
+
+# 2. Environment Setup
+cp .env.example .env.local
+
+# 3. Start Local Blockchain (Terminal 1)
+npx hardhat node
+
+# 4. Deploy & Setup Demo (Terminal 2)
+npm run deploy:localhost
+npm run demo-data
+
+# 5. Start the App
+npm run dev
 ```
 
-**Error: Port 3000 already in use**
+## 🦊 MetaMask Configuration
+
+1. **Add Localhost Network:**
+   - Network Name: `Localhost 8545`
+   - RPC URL: `http://localhost:8545`
+   - Chain ID: `1337`
+   - Currency Symbol: `ETH`
+
+2. **Import Test Accounts:**
+   ```
+   Deployer: 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
+   User1:    0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d
+   User2:    0x5de4111afa1a4b94908f83103eb1f1706367c2e68ca870fc3fb9a804cdab365a
+   ```
+
+## 🎉 You're Ready!
+
+Visit `http://localhost:3000` and start exploring:
+
+- **🛒 Marketplace**: Browse and purchase carbon credits
+- **💼 Portfolio**: Manage your owned credits
+- **⚡ Create**: Mint new carbon credits
+- **🏦 Vaults**: Explore Symbiotic vault integration
+- **📊 Analytics**: View market statistics
+
+## 🌟 Demo Features
+
+Your local demo includes:
+- ✅ 4 carbon credits for sale
+- ✅ 1 user portfolio credit
+- ✅ Multiple test accounts with ETH
+- ✅ Full marketplace functionality
+- ✅ Symbiotic Protocol integration
+
+## 🔧 Troubleshooting
+
+### Common Issues
+
+**"Contract not found" error:**
 ```bash
-npm run dev -- --port 3001
+# Make sure you ran the demo setup
+npm run demo
 ```
 
-**Error: Cannot connect to blockchain**
-- Asegúrate de que `npx hardhat node` esté corriendo
-- Verifica que MetaMask esté conectado a localhost:8545
+**MetaMask connection issues:**
+- Ensure you're connected to localhost:8545
+- Reset MetaMask account if transactions fail
 
-### Soporte Rápido
-- 💬 Discord: [Únete aquí](https://discord.gg/carboncredit)
-- 📧 Email: team@carboncreditmarketplace.com
-- 🐛 Issues: [GitHub Issues](https://github.com/iNeenah/AlepHACKTON/issues)
+**Port already in use:**
+```bash
+# Kill any process using port 8545
+npx kill-port 8545
+```
 
-## 🏆 Características Destacadas
+## 🌐 Production Deployment
 
-- ✅ **Smart Contracts Seguros** - OpenZeppelin + Hardhat
-- ✅ **UI Moderna** - Next.js + Tailwind CSS
-- ✅ **Integración Symbiotic** - Vaults y staking
-- ✅ **Responsive Design** - Funciona en móvil
-- ✅ **Deploy Automático** - CI/CD con GitHub Actions
-- ✅ **Documentación Completa** - Guías paso a paso
+For Sepolia testnet deployment:
+```bash
+# Get Sepolia ETH from faucet
+# Update .env.local with your private key
+npm run deploy:sepolia
+```
+
+For detailed production deployment, see [DEPLOYMENT.md](./DEPLOYMENT.md).
+
+## 🏆 Key Features
+
+- ✅ **Secure Smart Contracts** - OpenZeppelin + Hardhat
+- ✅ **Modern UI** - Next.js + Tailwind CSS
+- ✅ **Symbiotic Integration** - Tranche-based vaults
+- ✅ **Responsive Design** - Works on mobile
+- ✅ **Full Marketplace** - Buy, sell, retire credits
+- ✅ **Complete Documentation** - Step-by-step guides
 
 ---
 
-**¡Empieza en menos de 5 minutos! 🚀**
+**Start in less than 5 minutes! 🚀**

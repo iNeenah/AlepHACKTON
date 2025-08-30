@@ -289,34 +289,44 @@ npx hardhat test test/CarbonCreditNFT.test.js
 
 ---
 
-## 🚀 Deployment
+## 🚀 Deployment Options
 
-### Mainnet Deployment
+### 🏠 Local Development (Recommended for Hackathon)
 
-```bash
-# Deploy to Ethereum mainnet
-npm run deploy:mainnet
-
-# Verify contracts
-npm run verify:mainnet
-```
-
-### Testnet Deployment
+The project works perfectly locally - no need to deploy to production for development or demo purposes:
 
 ```bash
-# Deploy to Sepolia testnet
-npm run deploy:sepolia
-
-# Deploy to Polygon Mumbai
-npm run deploy:mumbai
+# Start local development
+npm run dev
+# Your app will be available at http://localhost:3000
 ```
 
-### Contract Addresses
+### 🌐 Optional: Vercel Deployment (For Public Demo)
 
-| Network | Contract | Address |
-|---------|----------|---------|
-| Ethereum Mainnet | CarbonCreditNFT | `0x...` |
-| Sepolia Testnet | CarbonCreditNFT | `0x5FbDB2315678afecb367f032d93F642f64180aa3` |
+If you want to make your project publicly accessible:
+
+```bash
+# Deploy to Vercel (optional)
+vercel --prod
+```
+
+**Note**: Vercel deployment is purely aesthetic - your project is fully functional locally!
+
+### 🔗 Blockchain Networks
+
+| Network | Purpose | Contract Address |
+|---------|---------|------------------|
+| **Sepolia Testnet** | **Recommended** | Deploy your contracts here |
+| Localhost | Local testing | `0x5FbDB2315678afecb367f032d93F642f64180aa3` |
+
+### 🏦 Symbiotic Protocol Addresses (Sepolia)
+
+| Contract | Address |
+|----------|---------|
+| VaultFactory | `0x407A039D94948484D356eFB765b3c74382A050B4` |
+| OperatorRegistry | `0x6F75a4ffF97326A00e52662d82EA4FdE86a2C548` |
+| wstETH | `0xB82381A3fBD3FaFA77B3a7bE693342618240067b` |
+| stETH | `0x3e3FE7dBc6B4C189E7128855dD526361c49b40Af` |
 
 ---
 

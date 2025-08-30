@@ -3,7 +3,7 @@ pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "./VotingPowerProvider.sol";
 
 /**
@@ -53,7 +53,7 @@ contract CarbonCreditTrancheVault is Ownable, ReentrancyGuard {
     event SlashingExecuted(TrancheType indexed tranche, uint256 amount, string reason);
     event CarbonCreditRetired(uint256 indexed creditId, uint256 carbonAmount, address indexed user);
     
-    constructor(address _asset, address _votingPowerProvider) {
+    constructor(address _asset, address _votingPowerProvider, address initialOwner) Ownable(initialOwner) {
         require(_asset != address(0) && _votingPowerProvider != address(0), "Invalid addresses");
         
         asset = IERC20(_asset);
@@ -216,7 +216,7 @@ contract CarbonCreditTrancheVault is Ownable, ReentrancyGuard {
         bool acceptingDeposits
     ) {
         TrancheInfo storage info = tranches[tranche];
-        uint256 currentAPY = (rewardRate * info.yieldBooster) / BASIS_POINTS;
+        currentAPY = (rewardRate * info.yieldBooster) / BASIS_POINTS;
         
         return (
             info.totalDeposited,

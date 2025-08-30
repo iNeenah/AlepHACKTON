@@ -1,4 +1,7 @@
 import "@nomicfoundation/hardhat-toolbox";
+import dotenv from "dotenv";
+
+dotenv.config({ path: ".env.local" });
 
 /** @type import('hardhat/config').HardhatUserConfig */
 export default {

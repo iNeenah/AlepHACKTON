@@ -2,7 +2,7 @@
 pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "./VotingPowerProvider.sol";
 import "./KeyRegistry.sol";
 
@@ -131,8 +131,9 @@ contract ValSetDriver is Ownable, ReentrancyGuard {
     
     constructor(
         address _votingPowerProvider,
-        address _keyRegistry
-    ) {
+        address _keyRegistry,
+        address initialOwner
+    ) Ownable(initialOwner) {
         require(_votingPowerProvider != address(0), "Invalid VotingPowerProvider");
         require(_keyRegistry != address(0), "Invalid KeyRegistry");
         

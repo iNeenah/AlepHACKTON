@@ -31,6 +31,8 @@
     "node": "hardhat node",
     "clean": "hardhat clean && rm -rf .next",
     "demo-data": "hardhat run scripts/demoData.js --network localhost",
+    "demo": "hardhat run scripts/demo-local.js --network localhost",
+    "check-balance": "hardhat run scripts/check-balance.js --network sepolia",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "setup": "node scripts/setup.js"
@@ -45,6 +47,7 @@
     "axios": "^1.11.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "dotenv": "^17.2.1",
     "ethers": "^6.15.0",
     "lucide-react": "^0.542.0",
     "next": "^14.2.32",
